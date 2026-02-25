@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taller Online: Excel e IA para Estudiantes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Reset y configuración base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', 'Segoe UI', sans-serif;
+            font-size: 11pt;
+            line-height: 1.7;
+            color: #333;
+            text-align: justify;
+            text-align-last: left;
+        }
+        
+        /* Configuración de página */
+        @page {
+            size: A4;
+            margin: 2cm 2cm 2.5cm 2cm;
+            @top-center { content: string(doctitle); font-size: 9pt; color: #666; }
+            @bottom-center { content: counter(page); font-size: 9pt; color: #666; }
+        }
+        
+        @page :first {
+            margin: 0;
+            @top-center { content: none; }
+            @bottom-center { content: none; }
+        }
+        
+        @page cover { 
+            margin: 0;
+            @top-center { content: none; } 
+            @bottom-center { content: none; } 
+        }
+        
+        @page toc { 
+            @top-center { content: none; } 
+            @bottom-center { content: none; } 
+        }
+        
+        body { string-set: doctitle ""; }
+        h1 { string-set: doctitle content(); }
+        
+        /* Portada con diseño moderno */
+        .cover {
+            width: 210mm;
+            height: 297mm;
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+            page: cover;
+            page-break-after: always;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        }
+        
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 80%;
+            height: 150%;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        
+        .cover::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -20%;
+            width: 60%;
+            height: 100%;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+        }
+        
+        .cover-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .shape-1 {
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            width: 80px;
+            height: 80px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+        }
+        
+        .shape-2 {
+            position: absolute;
+            top: 20%;
+            right: 10%;
+            width: 120px;
+            height: 120px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            transform: rotate(45deg);
+        }
+        
+        .shape-3 {
+            position: absolute;
+            bottom: 25%;
+            left: 8%;
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+        }
+        
+        .shape-4 {
+            position: absolute;
+            bottom: 15%;
+            right: 15%;
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+        }
+        
+        .cover-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 85%;
+            z-index: 10;
+        }
+        
+        .cover-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 25px;
+            border-radius: 25px;
+            font-size: 11pt;
+            font-weight: 600;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .cover-title {
+            font-size: 36pt;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            line-height: 1.2;
+        }
+        
+        .cover-subtitle {
+            font-size: 16pt;
+            color: rgba(255,255,255,0.95);
+            margin-bottom: 50px;
+            font-weight: 600;
+        }
+        
+        .cover-meta {
+            font-size: 12pt;
+            color: rgba(255,255,255,0.9);
+            line-height: 2;
+        }
+        
+        .cover-meta p {
+            margin: 5px 0;
+        }
+        
+        .cover-icon {
+            font-size: 60pt;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        
+        /* Tabla de contenidos */
+        .toc-page {
+            page: toc;
+            page-break-after: always;
+        }
+        
+        .toc-title {
+            font-size: 24pt;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .toc {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .toc li {
+            margin: 12px 0;
+            padding: 10px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+        
+        .toc a {
+            color: #333;
+            text-decoration: none;
+            font-size: 12pt;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .toc a::after {
+            content: leader('.') target-counter(attr(href url), page);
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .toc-section {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 13pt;
+        }
+        
+        .toc-subsection {
+            padding-left: 25px;
+            font-size: 11pt;
+        }
+        
+        /* Encabezados */
+        h1 {
+            font-size: 22pt;
+            font-weight: 700;
+            color: #667eea;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            page-break-after: avoid;
+        }
+        
+        h2 {
+            font-size: 16pt;
+            font-weight: 700;
+            color: #764ba2;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #764ba2;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 13pt;
+            font-weight: 700;
+            color: #333;
+            margin: 20px 0 10px 0;
+            page-break-after: avoid;
+        }
+        
+        /* Párrafos y texto */
+        p {
+            margin: 12px 0;
+        }
+        
+        /* Cajas de información */
+        .info-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+            page-break-inside: avoid;
+        }
+        
+        .info-box-title {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 12pt;
+            margin-bottom: 10px;
+        }
+        
+        .tip-box {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+            page-break-inside: avoid;
+        }
+        
+        .tip-box-title {
+            font-weight: 700;
+            color: #856404;
+            font-size: 12pt;
+            margin-bottom: 10px;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%);
+            border-left: 5px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+            page-break-inside: avoid;
+        }
+        
+        .warning-box-title {
+            font-weight: 700;
+            color: #721c24;
+            font-size: 12pt;
+            margin-bottom: 10px;
+        }
+        
+        .success-box {
+            background: linear-gradient(135deg, #e6f7e6 0%, #ccedcc 100%);
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+            page-break-inside: avoid;
+        }
+        
+        .success-box-title {
+            font-weight: 700;
+            color: #155724;
+            font-size: 12pt;
+            margin-bottom: 10px;
+        }
+        
+        /* Tablas */
+        table {
+            width: 100%;
+            max-width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 10pt;
+            page-break-inside: avoid;
+        }
+        
+        thead {
+            display: table-header-group;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 700;
+        }
+        
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr { page-break-inside: avoid; }
+        
+        caption {
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #667eea;
+            text-align: left;
+        }
+        
+        caption::before {
+            content: attr(data-label) "  ";
+            font-weight: 800;
+        }
+        
+        /* Listas */
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        /* Pasos numerados */
+        .steps {
+            counter-reset: none;
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            page-break-inside: avoid;
+        }
+        
+        .step-number {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14pt;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        /* Ejercicios */
+        .exercise {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            page-break-inside: avoid;
+        }
+        
+        .exercise-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .exercise-number {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 16pt;
+            margin-right: 15px;
+        }
+        
+        .exercise-title {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 14pt;
+        }
+        
+        .exercise-week {
+            background: #667eea;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 15px;
+            font-size: 9pt;
+            margin-left: 10px;
+        }
+        
+        /* Código y fórmulas */
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 10pt;
+            color: #d63384;
+            word-break: break-word;
+        }
+        
+        .formula-box {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Consolas', monospace;
+            page-break-inside: avoid;
+        }
+        
+        .formula-name {
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        
+        .formula-example {
+            color: #666;
+            font-size: 10pt;
+            margin-top: 8px;
+            font-style: italic;
+        }
+        
+        /* Imágenes y figuras */
+        figure {
+            margin: 20px 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+        
+        figure img {
+            max-width: 80%;
+            max-height: 40vh;
+            height: auto;
+        }
+        
+        figcaption {
+            margin-top: 10px;
+            font-size: 10pt;
+            color: #666;
+            font-style: italic;
+        }
+        
+        figcaption::before {
+            content: attr(data-label) "  ";
+            font-weight: 700;
+            font-style: normal;
+        }
+        
+        /* Sección de separación */
+        .section-divider {
+            text-align: center;
+            margin: 40px 0;
+            page-break-before: always;
+        }
+        
+        .section-divider::before {
+            content: '***';
+            color: #667eea;
+            font-size: 20pt;
+            letter-spacing: 10px;
+        }
+        
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .checklist li {
+            padding-left: 35px;
+            position: relative;
+            margin: 10px 0;
+        }
+        
+        .checklist li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 2px;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #667eea;
+            border-radius: 4px;
+        }
+        
+        /* Prompts de IA */
+        .prompt-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 2px solid #2196f3;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+        
+        .prompt-label {
+            background: #2196f3;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 9pt;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .prompt-text {
+            font-style: italic;
+            color: #1565c0;
+            font-size: 11pt;
+            line-height: 1.6;
+        }
+        
+        /* Prevención de desbordamiento */
+        pre, table, figure, img, svg, blockquote {
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        pre {
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        a {
+            word-break: break-all;
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        /* Página de introducción */
+        .intro-page {
+            page-break-after: always;
+        }
+        
+        /* Énfasis */
+        strong {
+            color: #667eea;
+        }
+        
+        /* Resumen al final */
+        .summary-box {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border: 2px solid #9c27b0;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .summary-title {
+            font-size: 16pt;
+            font-weight: 700;
+            color: #9c27b0;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <!-- PORTADA -->
+    <div class="cover">
+        <div class="cover-shapes">
+            <div class="shape-1"></div>
+            <div class="shape-2"></div>
+            <div class="shape-3"></div>
+            <div class="shape-4"></div>
+        </div>
+        <div class="cover-content">
+            <div class="cover-badge">TALLER ONLINE PARA ESTUDIANTES</div>
+            <div class="cover-icon">📊🤖</div>
+            <h1 class="cover-title">Excel e Inteligencia Artificial para Estudiar Mejor</h1>
+            <p class="cover-subtitle">Herramientas digitales para organizar, aprender y destacar</p>
+            <div class="cover-meta">
+                <p><strong>Instructor:</strong> Juan Carlos Meza Martínez</p>
+                <p><strong>Dirigido a:</strong> Estudiantes de secundaria en Colombia</p>
+                <p><strong>Nivel:</strong> Principiante</p>
+                <p><strong>Duración:</strong> 4 semanas</p>
+                <p style="margin-top: 30px; font-size: 11pt;">2025</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLA DE CONTENIDOS -->
+    <div class="toc-page">
+        <h2 class="toc-title">Contenido del Taller</h2>
+        <ul class="toc">
+            <li class="toc-section"><a href="#parte1">Parte 1: Excel Básico para el Estudio</a></li>
+            <li class="toc-subsection"><a href="#excel1">1.1 ¿Por qué aprender Excel?</a></li>
+            <li class="toc-subsection"><a href="#excel2">1.2 Conociendo la interfaz</a></li>
+            <li class="toc-subsection"><a href="#excel3">1.3 Organización de datos</a></li>
+            <li class="toc-subsection"><a href="#excel4">1.4 Fórmulas esenciales</a></li>
+            <li class="toc-subsection"><a href="#excel5">1.5 Tablas dinámicas básicas</a></li>
+            <li class="toc-subsection"><a href="#excel6">1.6 Gráficos simples</a></li>
+            <li class="toc-section"><a href="#parte2">Parte 2: IA para Estudiar de Forma Ética</a></li>
+            <li class="toc-subsection"><a href="#ia1">2.1 ¿Qué es la IA y cómo puede ayudarte?</a></li>
+            <li class="toc-subsection"><a href="#ia2">2.2 Herramientas de IA gratuitas</a></li>
+            <li class="toc-subsection"><a href="#ia3">2.3 Resúmenes inteligentes</a></li>
+            <li class="toc-subsection"><a href="#ia4">2.4 Explicación de temas difíciles</a></li>
+            <li class="toc-subsection"><a href="#ia5">2.5 Preparación de exámenes</a></li>
+            <li class="toc-subsection"><a href="#ia6">2.6 Ética y prevención del plagio</a></li>
+            <li class="toc-section"><a href="#parte3">Parte 3: Ejercicios Prácticos Semanales</a></li>
+            <li class="toc-subsection"><a href="#sem1">Semana 1: Organización del semestre</a></li>
+            <li class="toc-subsection"><a href="#sem2">Semana 2: Control de notas y fórmulas</a></li>
+            <li class="toc-subsection"><a href="#sem3">Semana 3: IA para comprender mejor</a></li>
+            <li class="toc-subsection"><a href="#sem4">Semana 4: Proyecto final integrador</a></li>
+        </ul>
+    </div>
+
+    <!-- INTRODUCCIÓN -->
+    <div class="intro-page">
+        <h1>¡Bienvenido al Taller!</h1>
+        
+        <p>Este taller está diseñado especialmente para ti, estudiante de secundaria en Colombia, que quiere aprovechar la tecnología para mejorar tu rendimiento académico de manera <strong>ética, práctica y efectiva</strong>.</p>
+        
+        <div class="info-box">
+            <div class="info-box-title">¿Qué vas a aprender?</div>
+            <p>Al finalizar este taller serás capaz de:</p>
+            <ul>
+                <li>Crear hojas de cálculo para organizar tus estudios, horarios y notas</li>
+                <li>Usar fórmulas básicas para calcular promedios y estadísticas</li>
+                <li>Crear gráficos que visualicen tu progreso académico</li>
+                <li>Utilizar la Inteligencia Artificial como asistente de estudio</li>
+                <li>Generar resúmenes, explicaciones y material de repaso con IA</li>
+                <li>Evitar el plagio y usar la IA de forma responsable</li>
+            </ul>
+        </div>
+        
+        <div class="tip-box">
+            <div class="tip-box-title">Consejo antes de empezar</div>
+            <p>No necesitas experiencia previa. Todo está explicado paso a paso con ejemplos de situaciones reales que vives como estudiante. ¡Toma notas y practica mientras avanzas!</p>
+        </div>
+        
+        <h2>¿Qué necesitas?</h2>
+        <ul class="checklist">
+            <li>Un computador, tablet o celular con acceso a internet</li>
+            <li>Cuenta de Google (para usar Google Sheets gratis)</li>
+            <li>Cuenta gratuita en ChatGPT, Claude o Gemini</li>
+            <li>Ganas de aprender y practicar</li>
+        </ul>
+    </div>
+
+    <!-- PARTE 1: EXCEL -->
+    <h1 id="parte1">Parte 1: Excel Básico para el Estudio</h1>
+    
+    <h2 id="excel1">1.1 ¿Por qué aprender Excel?</h2>
+    
+    <p>Excel (o su versión gratuita Google Sheets) es una de las herramientas más útiles que puedes aprender como estudiante. Te permite organizar información, hacer cálculos automáticos y visualizar datos de forma clara.</p>
+    
+    <div class="success-box">
+        <div class="success-box-title">Usos prácticos para estudiantes</div>
+        <ul>
+            <li><strong>Control de notas:</strong> Calcula tus promedios automáticamente</li>
+            <li><strong>Horarios de estudio:</strong> Organiza tu tiempo semanal</li>
+            <li><strong>Seguimiento de tareas:</strong> Lleva el control de pendientes</li>
+            <li><strong>Presupuesto:</strong> Administra tu dinero de forma sencilla</li>
+            <li><strong>Proyectos de investigación:</strong> Organiza datos y fuentes</li>
+        </ul>
+    </div>
+    
+    <h2 id="excel2">1.2 Conociendo la interfaz</h2>
+    
+    <p>Tanto Excel como Google Sheets tienen una estructura similar. Aquí están los elementos principales:</p>
+    
+    <table>
+        <caption data-label="Tabla 1">Elementos básicos de la interfaz</caption>
+        <thead>
+            <tr>
+                <th>Elemento</th>
+                <th>Descripción</th>
+                <th>Ejemplo de uso</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Celda</strong></td>
+                <td>Cuadrito donde escribes datos</td>
+                <td>A1, B5, C10</td>
+            </tr>
+            <tr>
+                <td><strong>Columna</strong></td>
+                <td>Grupo de celdas verticales (letras)</td>
+                <td>Columna A, B, C</td>
+            </tr>
+            <tr>
+                <td><strong>Fila</strong></td>
+                <td>Grupo de celdas horizontales (números)</td>
+                <td>Fila 1, 2, 3</td>
+            </tr>
+            <tr>
+                <td><strong>Rango</strong></td>
+                <td>Grupo de celdas seleccionadas</td>
+                <td>A1:C5</td>
+            </tr>
+            <tr>
+                <td><strong>Barra de fórmulas</strong></td>
+                <td>Muestra el contenido de la celda activa</td>
+                <td>Editar fórmulas</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="tip-box">
+        <div class="tip-box-title">Truco rápido</div>
+        <p>Para moverte rápido entre celdas, usa las <strong>flechas del teclado</strong>. Para seleccionar varias celdas, mantén presionada la tecla <strong>Shift</strong> mientras te mueves.</p>
+    </div>
+    
+    <h2 id="excel3">1.3 Organización de datos</h2>
+    
+    <p>La clave de una buena hoja de cálculo es organizar la información de forma lógica. Sigue estas reglas básicas:</p>
+    
+    <div class="info-box">
+        <div class="info-box-title">Reglas de oro para organizar datos</div>
+        <ol>
+            <li><strong>Un dato por celda:</strong> No combines varias cosas en una sola celda</li>
+            <li><strong>Encabezados claros:</strong> La primera fila debe describir qué hay en cada columna</li>
+            <li><strong>Formato consistente:</strong> Todas las fechas iguales, todos los números con el mismo formato</li>
+            <li><strong>Sin celdas vacías en medio:</strong> Deja las filas completas, no saltes celdas</li>
+        </ol>
+    </div>
+    
+    <h3>Ejemplo: Tabla de materias</h3>
+    
+    <table>
+        <caption data-label="Tabla 2">Ejemplo de organización de materias</caption>
+        <thead>
+            <tr>
+                <th>Materia</th>
+                <th>Profesor</th>
+                <th>Día</th>
+                <th>Hora</th>
+                <th>Salón</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Matemáticas</td>
+                <td>Prof. García</td>
+                <td>Lunes</td>
+                <td>8:00 - 10:00</td>
+                <td>201</td>
+            </tr>
+            <tr>
+                <td>Ciencias</td>
+                <td>Prof. Martínez</td>
+                <td>Martes</td>
+                <td>10:00 - 12:00</td>
+                <td>305</td>
+            </tr>
+            <tr>
+                <td>Lenguaje</td>
+                <td>Prof. López</td>
+                <td>Miércoles</td>
+                <td>8:00 - 10:00</td>
+                <td>102</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2 id="excel4">1.4 Fórmulas esenciales</h2>
+    
+    <p>Las fórmulas son lo que hace poderoso a Excel. Te permiten hacer cálculos automáticos. Todas las fórmulas empiezan con el signo <code>=</code></p>
+    
+    <h3>Fórmulas básicas que todo estudiante debe conocer</h3>
+    
+    <div class="formula-box">
+        <div class="formula-name">SUMA - Para sumar varios números</div>
+        <code>=SUMA(A1:A5)</code>
+        <div class="formula-example">Suma todos los valores desde A1 hasta A5. Útil para sumar notas.</div>
+    </div>
+    
+    <div class="formula-box">
+        <div class="formula-name">PROMEDIO - Para calcular el promedio</div>
+        <code>=PROMEDIO(B2:B10)</code>
+        <div class="formula-example">Calcula el promedio de las notas en el rango B2:B10.</div>
+    </div>
+    
+    <div class="formula-box">
+        <div class="formula-name">MAX y MIN - Para encontrar valores extremos</div>
+        <code>=MAX(C1:C10)</code> y <code>=MIN(C1:C10)</code>
+        <div class="formula-example">Encuentra la nota más alta y más baja.</div>
+    </div>
+    
+    <div class="formula-box">
+        <div class="formula-name">CONTAR - Para contar celdas con números</div>
+        <code>=CONTAR(A1:A20)</code>
+        <div class="formula-example">Cuenta cuántas notas has ingresado.</div>
+    </div>
+    
+    <div class="formula-box">
+        <div class="formula-name">SI - Para tomar decisiones</div>
+        <code>=SI(B2>=3,"Aprobado","Reprobado")</code>
+        <div class="formula-example">Si la nota en B2 es 3 o más, muestra "Aprobado", si no, "Reprobado".</div>
+    </div>
+    
+    <div class="tip-box">
+        <div class="tip-box-title">¿Cómo escribir una fórmula?</div>
+        <ol class="steps">
+            <li style="margin: 5px 0;">Haz clic en la celda donde quieres el resultado</li>
+            <li style="margin: 5px 0;">Escribe el signo <code>=</code></li>
+            <li style="margin: 5px 0;">Escribe el nombre de la fórmula (ej: PROMEDIO)</li>
+            <li style="margin: 5px 0;">Abre paréntesis <code>(</code></li>
+            <li style="margin: 5px 0;">Selecciona el rango de celdas o escríbelo</li>
+            <li style="margin: 5px 0;">Cierra paréntesis <code>)</code> y presiona Enter</li>
+        </ol>
+    </div>
+    
+    <h3>Ejemplo práctico: Calculadora de notas</h3>
+    
+    <table>
+        <caption data-label="Tabla 3">Ejemplo de registro de notas con fórmulas</caption>
+        <thead>
+            <tr>
+                <th>Materia</th>
+                <th>Nota 1 (30%)</th>
+                <th>Nota 2 (30%)</th>
+                <th>Nota 3 (40%)</th>
+                <th>Nota Final</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Matemáticas</td>
+                <td>4.0</td>
+                <td>3.5</td>
+                <td>4.2</td>
+                <td><code>=B2*0.3+C2*0.3+D2*0.4</code></td>
+                <td><code>=SI(E2>=3,"Aprobado","Reprobado")</code></td>
+            </tr>
+            <tr>
+                <td>Ciencias</td>
+                <td>3.8</td>
+                <td>4.0</td>
+                <td>3.5</td>
+                <td><code>=B3*0.3+C3*0.3+D3*0.4</code></td>
+                <td><code>=SI(E3>=3,"Aprobado","Reprobado")</code></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2 id="excel5">1.5 Tablas dinámicas básicas</h2>
+    
+    <p>Las tablas dinámicas te permiten resumir y analizar grandes cantidades de datos de forma rápida. Son perfectas para ver patrones en tus notas o tiempos de estudio.</p>
+    
+    <div class="info-box">
+        <div class="info-box-title">¿Para qué sirven las tablas dinámicas?</div>
+        <ul>
+            <li>Resumir datos largos en una tabla compacta</li>
+            <li>Ver totales por categoría (ej: promedio por materia)</li>
+            <li>Identificar patrones y tendencias</li>
+            <li>Crear reportes automáticos</li>
+        </ul>
+    </div>
+    
+    <h3>Pasos para crear una tabla dinámica en Google Sheets</h3>
+    
+    <ol class="steps">
+        <li class="step">
+            <span class="step-number">1</span>
+            <div class="step-content">
+                <div class="step-title">Selecciona tus datos</div>
+                <p>Selecciona toda la tabla incluyendo los encabezados (arrastra el mouse desde A1 hasta la última celda con datos).</p>
+            </div>
+        </li>
+        <li class="step">
+            <span class="step-number">2</span>
+            <div class="step-content">
+                <div class="step-title">Inserta la tabla dinámica</div>
+                <p>Ve al menú <strong>Insertar</strong> > <strong>Tabla dinámica</strong>. Elige si quieres crearla en una hoja nueva o existente.</p>
+            </div>
+        </li>
+        <li class="step">
+            <span class="step-number">3</span>
+            <div class="step-content">
+                <div class="step-title">Configura los campos</div>
+                <p>Arrastra los campos a las áreas correspondientes:
+                <br>- <strong>Filas:</strong> Lo que quieres ver en las filas (ej: Materia)
+                <br>- <strong>Columnas:</strong> Lo que quieres ver en columnas (ej: Período)
+                <br>- <strong>Valores:</strong> Lo que quieres calcular (ej: Promedio de Nota)</p>
+            </div>
+        </li>
+    </ol>
+    
+    <h2 id="excel6">1.6 Gráficos simples</h2>
+    
+    <p>Los gráficos ayudan a visualizar tus datos de forma más clara. Son ideales para ver tu progreso académico.</p>
+    
+    <div class="info-box">
+        <div class="info-box-title">Tipos de gráficos útiles para estudiantes</div>
+        <ul>
+            <li><strong>De barras:</strong> Comparar notas entre materias</li>
+            <li><strong>De líneas:</strong> Ver tu progreso a lo largo del tiempo</li>
+            <li><strong>Circular (pastel):</strong> Ver distribución de tiempo de estudio</li>
+            <li><strong>De columnas:</strong> Comparar rendimiento por período</li>
+        </ul>
+    </div>
+    
+    <h3>Cómo crear un gráfico en Google Sheets</h3>
+    
+    <ol class="steps">
+        <li class="step">
+            <span class="step-number">1</span>
+            <div class="step-content">
+                <div class="step-title">Selecciona los datos</div>
+                <p>Incluye los encabezados y los datos que quieres graficar.</p>
+            </div>
+        </li>
+        <li class="step">
+            <span class="step-number">2</span>
+            <div class="step-content">
+                <div class="step-title">Inserta el gráfico</div>
+                <p>Ve a <strong>Insertar</strong> > <strong>Gráfico</strong>. Google Sheets detectará automáticamente el tipo de gráfico recomendado.</p>
+            </div>
+        </li>
+        <li class="step">
+            <span class="step-number">3</span>
+            <div class="step-content">
+                <div class="step-title">Personaliza el gráfico</div>
+                <p>Haz clic en el gráfico y luego en los tres puntos para editar. Puedes cambiar el título, colores, ejes y más.</p>
+            </div>
+        </li>
+    </ol>
+    
+    <div class="tip-box">
+        <div class="tip-box-title">Consejo de diseño</div>
+        <p>Usa colores diferentes para cada materia y mantén el mismo color para la misma materia en todos tus gráficos. Así podrás identificarlas rápidamente.</p>
+    </div>
+
+    <!-- PARTE 2: IA -->
+    <h1 id="parte2">Parte 2: Inteligencia Artificial para Estudiar</h1>
+    
+    <h2 id="ia1">2.1 ¿Qué es la IA y cómo puede ayudarte?</h2>
+    
+    <p>La Inteligencia Artificial (IA) son programas de computador que pueden entender texto, responder preguntas y ayudarte con tareas. No son humanos, pero pueden ser excelentes asistentes de estudio cuando los usas correctamente.</p>
+    
+    <div class="info-box">
+        <div class="info-box-title">La IA es tu asistente, no tu reemplazo</div>
+        <p>La IA te ayuda a <strong>aprender mejor</strong>, pero no hace el trabajo por ti. Tú debes pensar, analizar y crear. La IA es como un tutor que te explica, no como alguien que hace tus tareas.</p>
+    </div>
+    
+    <h3>Formas éticas de usar la IA para estudiar</h3>
+    
+    <table>
+        <caption data-label="Tabla 4">Usos éticos vs. no éticos de la IA</caption>
+        <thead>
+            <tr>
+                <th>✅ SÍ está bien</th>
+                <th>❌ NO está bien</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Pedir explicaciones de temas que no entiendes</td>
+                <td>Pedirle que haga tu tarea completa</td>
+            </tr>
+            <tr>
+                <td>Generar resúmenes de textos largos que ya leíste</td>
+                <td>Copiar y pegar respuestas sin entenderlas</td>
+            </tr>
+            <tr>
+                <td>Crear flashcards para estudiar</td>
+                <td>Presentar trabajo de IA como propio</td>
+            </tr>
+            <tr>
+                <td>Practicar con preguntas de examen</td>
+                <td>Usarla para hacer trampas en evaluaciones</td>
+            </tr>
+            <tr>
+                <td>Revisar y mejorar tu redacción</td>
+                <td>Dejar que escriba ensayos completos por ti</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2 id="ia2">2.2 Herramientas de IA gratuitas</h2>
+    
+    <p>Existen varias herramientas de IA que puedes usar gratis. Aquí te presentamos las más populares:</p>
+    
+    <table>
+        <caption data-label="Tabla 5">Herramientas de IA gratuitas para estudiantes</caption>
+        <thead>
+            <tr>
+                <th>Herramienta</th>
+                <th>Lo mejor para</th>
+                <th>Requiere cuenta</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>ChatGPT</strong></td>
+                <td>Explicaciones, resúmenes, práctica</td>
+                <td>Sí (gratis)</td>
+            </tr>
+            <tr>
+                <td><strong>Claude (Anthropic)</strong></td>
+                <td>Análisis profundo, redacción</td>
+                <td>Sí (gratis)</td>
+            </tr>
+            <tr>
+                <td><strong>Gemini (Google)</strong></td>
+                <td>Integración con Google, búsquedas</td>
+                <td>Cuenta Google</td>
+            </tr>
+            <tr>
+                <td><strong>Microsoft Copilot</strong></td>
+                <td>Integración con Office</td>
+                <td>Cuenta Microsoft</td>
+            </tr>
+            <tr>
+                <td><strong>Perplexity</strong></td>
+                <td>Investigación con fuentes</td>
+                <td>Opcional</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="tip-box">
+        <div class="tip-box-title">Recomendación</div>
+        <p>Empieza con <strong>ChatGPT</strong> o <strong>Claude</strong>. Ambos son gratuitos, fáciles de usar y muy útiles para estudiantes. Puedes tener cuentas en varios y usar el que mejor te funcione para cada tarea.</p>
+    </div>
+    
+    <h2 id="ia3">2.3 Resúmenes inteligentes</h2>
+    
+    <p>Una de las mejores formas de usar la IA es para crear resúmenes de textos largos. Esto te ayuda a estudiar más rápido y enfocarte en lo importante.</p>
+    
+    <div class="info-box">
+        <div class="info-box-title">Cuándo usar resúmenes de IA</div>
+        <ul>
+            <li>Tienes un texto muy largo y necesitas los puntos clave</li>
+            <li>Quieres repasar rápido antes de un examen</li>
+            <li>Necesitas entender un artículo complejo</li>
+            <li>Quieres crear apuntes resumidos de una clase</li>
+        </ul>
+    </div>
+    
+    <h3>Ejemplos de prompts para resúmenes</h3>
+    
+    <div class="prompt-box">
+        <span class="prompt-label">PROMPT 1</span>
+        <p class="prompt-text">"Resume el siguiente texto en 5 puntos clave. El texto es: [pega aquí el texto]"</p>
+    </div>
+    
+    <div class="prompt-box">
+        <span class="prompt-label">PROMPT 2</span>
+        <p class="prompt-text">"Crea un resumen de este capítulo para estudiar. Incluye los conceptos más importantes, definiciones clave y ejemplos principales. Texto: [pega el texto]"</p>
+    </div>
+    
+    <div class="prompt-box">
+        <span class="prompt-label">PROMPT 3</span>
+        <p class="prompt-text">"Resume este artículo en formato de mapa conceptual con los temas principales y subtemas. Texto: [pega el texto]"</p>
+    </div>
+    
+    <div class="warning-box">
+        <div class="warning-box-title">¡Importante!</div>
+        <p>Siempre <strong>lee el texto original</strong> antes o después de pedir el resumen. La IA puede omitir detalles importantes o malinterpretar información. El resumen es una guía, no un reemplazo.</p>
+    </div>
+    
+    <h2 id="ia4">2.4 Explicación de temas difíciles</h2>
+    
+    <p>La IA es excelente para explicar conceptos complejos de forma sencilla. Puedes pedirle que te explique como si tuvieras diferentes edades o niveles de conocimiento.</p>
+    
+    <h3>Estrategias para obtener buenas explicaciones</h3>
+    
+    <div class="prompt-box">
+        <span class="prompt-label">EXPLICACIÓN SIMPLE</span>
+        <p class="prompt-text">"Explícame [tema] como si tuviera 12 años. Usa ejemplos de la vida cotidiana y evita tecnicismos."</p>
+    </div>
+    
+    <div class="prompt-box">
+        <span class="prompt-label">CON EJEMPLOS</span>
+        <p class="prompt-text">"Explica el concepto de [tema] y dame 3 ejemplos prácticos que pueda relacionar con mi vida diaria."</p>
+    </div>
+    
+    <div class="prompt-box">
+        <span class="prompt-label">PASO A PASO</span>
+        <p class="prompt-text">"Explícame paso a paso cómo resolver este ejercicio de [materia]: [pega el ejercicio]. No me des la respuesta final, guíame para que yo la descubra."</p>
+    </div>
+    
+    <div class="prompt-box">
+        <span class="prompt-label">ANÁLOGIAS</span>
+        <p class="prompt-text">"Explícame [concepto difícil] usando una analogía o comparación con algo cotidiano que entienda bien."</p>
+    </div>
+    
+    <div class="tip-box">
+        <div class="tip-box-title">Técnica del "por qué"</div>
+        <p>Si no entiendes algo, pregunta "¿por qué?" varias veces. La IA puede profundizar cada vez más hasta que el concepto quede claro. No tengas miedo de preguntar lo mismo de diferentes formas.</p>
+    </div>
+    
+    <h2 id="ia5">2.5 Preparación de exámenes</h2>
+    
+    <p>La IA puede ser tu compañero de estudio ideal para preparar exámenes. Puedes practicar con preguntas, crear material de repaso y simular exámenes.</p>
+    
+    <h3>Formas de usar la IA para preparar exámenes</h3>
+    
+    <div class="prompt-box">
+        <span class="prompt-label">GENERAR PREGUNTAS</span>
+        <p class="prompt-text">"Crea 10 preguntas de opción múltiple sobre [tema] con 4 opciones cada una. Incluye la respuesta correcta y una breve explicación de por qué es la correcta."</p>
+    </div>
+    
+    <div class="prompt-box">
+        <span class="prompt-label">FLASHCARDS</span>
+        <p class="prompt-text">"Crea 15 flashcards (tarjetas de estudio) sobre [tema]. Formato: pregunta en una línea, respuesta en la siguiente. Incluye conceptos, definiciones y fórmulas importantes."</p>
+    </div>
+    
+    <div class="prompt-box">
+        <span class="prompt-label">SIMULACRO DE EXAMEN</span>
+        <p class="prompt-text">"Vas a hacerme un simulacro de examen de [materia] sobre [temas]. Hazme 5 preguntas una por una. Espera mi respuesta antes de hacer la siguiente y dime si acerté. Al final dame mi calificación y áreas a mejorar."</p>
+    </div>
+    
+    <div class="prompt-box">
+        <span class="prompt-label">ESQUEMA DE REPASO</span>
+        <p class="prompt-text">"Crea un esquema de estudio para preparar un examen de [materia] que cubre [temas]. Organízalo por días y prioriza los temas más importantes."</p>
+    </div>
+    
+    <h2 id="ia6">2.6 Ética y prevención del plagio</h2>
+    
+    <p>Usar la IA de forma responsable es fundamental. El plagio es presentar trabajo de otros (incluida la IA) como propio, y tiene consecuencias serias en el ámbito académico.</p>
+    
+    <div class="warning-box">
+        <div class="warning-box-title">¿Qué es el plagio con IA?</div>
+        <ul>
+            <li>Copiar y pegar respuestas de IA sin entenderlas</li>
+            <li>Presentar ensayos escritos completamente por IA como propios</li>
+            <li>No citar cuando usas información generada por IA</li>
+            <li>Usar IA durante exámenes o evaluaciones sin autorización</li>
+        </ul>
+    </div>
+    
+    <h3>Reglas para usar IA de forma ética</h3>
+    
+    <div class="success-box">
+        <div class="success-box-title">Código de ética con IA</div>
+        <ol>
+            <li><strong>Sé transparente:</strong> Si tu profesor lo pide, indica cuándo usaste IA</li>
+            <li><strong>Entiende antes de usar:</strong> No copies lo que no comprendes</li>
+            <li><strong>Revisa y edita:</strong> La IA puede equivocarse; verifica la información</li>
+            <li><strong>Desarrolla tu voz:</strong> Usa la IA como ayuda, no como autor</li>
+            <li><strong>Respeta las reglas:</strong> Sigue las políticas de tu colegio sobre IA</li>
+        </ol>
+    </div>
+    
+    <h3>Cómo citar el uso de IA</h3>
+    
+    <p>Si tu profesor te pide citar el uso de IA, puedes usar este formato:</p>
+    
+    <div class="formula-box">
+        <div class="formula-name">Formato de citación</div>
+        <p>"Este trabajo utilizó [nombre de la herramienta, ej: ChatGPT] para [propósito específico, ej: generar ideas iniciales y revisar gramática]. El contenido final fue revisado, editado y aprobado por el autor."</p>
+    </div>
+    
+    <div class="tip-box">
+        <div class="tip-box-title">Recuerda siempre</div>
+        <p>La IA es una <strong>herramienta de apoyo</strong>, no un atajo. El verdadero aprendizaje viene cuando tú procesas, analizas y creas. Usa la IA para potenciar tu estudio, no para evitarlo.</p>
+    </div>
+
+    <!-- PARTE 3: EJERCICIOS -->
+    <h1 id="parte3">Parte 3: Ejercicios Prácticos Semanales</h1>
+    
+    <p>Estos ejercicios están diseñados para que practiques lo aprendido con situaciones reales de tu vida como estudiante. Completa uno por semana.</p>
+    
+    <h2 id="sem1">Semana 1: Organización del Semestre</h2>
+    
+    <div class="exercise">
+        <div class="exercise-header">
+            <span class="exercise-number">1</span>
+            <span class="exercise-title">Crea tu horario de clases en Excel</span>
+            <span class="exercise-week">Semana 1</span>
+        </div>
+        
+        <p><strong>Objetivo:</strong> Crear una hoja de cálculo con tu horario semanal de clases.</p>
+        
+        <h3>Instrucciones:</h3>
+        <ol>
+            <li>Abre Google Sheets o Excel</li>
+            <li>Crea una tabla con los días de la semana en columnas (Lunes a Viernes)</li>
+            <li>En las filas, pon las horas del día (de 6:00 a.m. a 6:00 p.m. en bloques de 1 hora)</li>
+            <li>Llena las celdas con tus materias según tu horario real</li>
+            <li>Aplica colores diferentes a cada materia (usa el botón de relleno de color)</li>
+            <li>Agrega una columna con el nombre del profesor de cada materia</li>
+        </ol>
+        
+        <div class="tip-box">
+            <div class="tip-box-title">Consejo</div>
+            <p>Usa colores que te gusten y que te sean fáciles de recordar. Por ejemplo: azul para matemáticas, verde para ciencias, amarillo para lenguaje.</p>
+        </div>
+        
+        <p><strong>Entregable:</strong> Captura de pantalla de tu horario completo con colores.</p>
+    </div>
+    
+    <div class="exercise">
+        <div class="exercise-header">
+            <span class="exercise-number">2</span>
+            <span class="exercise-title">Lista de materiales y libros</span>
+            <span class="exercise-week">Semana 1</span>
+        </div>
+        
+        <p><strong>Objetivo:</strong> Crear un inventario de materiales escolares.</p>
+        
+        <h3>Instrucciones:</h3>
+        <ol>
+            <li>Crea una nueva hoja en tu archivo</li>
+            <li>Haz una tabla con estas columnas: Materia, Libro, Cuaderno, Materiales especiales, ¿Tengo todo?</li>
+            <li>Llena la información para cada materia</li>
+            <li>En la columna "¿Tengo todo?" usa la fórmula <code>=SI(Y(B2<>"",C2<>""),"Sí","No")</code></li>
+            <li>Aplica formato condicional para que "Sí" aparezca en verde y "No" en rojo</li>
+        </ol>
+        
+        <p><strong>Entregable:</strong> Tabla completa con al menos 5 materias.</p>
+    </div>
+    
+    <h2 id="sem2">Semana 2: Control de Notas y Fórmulas</h2>
+    
+    <div class="exercise">
+        <div class="exercise-header">
+            <span class="exercise-number">3</span>
+            <span class="exercise-title">Calculadora de promedios</span>
+            <span class="exercise-week">Semana 2</span>
+        </div>
+        
+        <p><strong>Objetivo:</strong> Crear un sistema para calcular tus notas automáticamente.</p>
+        
+        <h3>Instrucciones:</h3>
+        <ol>
+            <li>Crea una tabla con estas columnas: Materia, Nota 1, Nota 2, Nota 3, Promedio, Estado</li>
+            <li>Ingresa al menos 5 materias con notas de ejemplo (usa escala 1-5)</li>
+            <li>En la columna Promedio, usa la fórmula: <code>=PROMEDIO(B2:D2)</code></li>
+            <li>En la columna Estado, usa: <code>=SI(E2>=3,"Aprobado","Reprobado")</code></li>
+            <li>Agrega al final una fila con "Promedio General" usando: <code>=PROMEDIO(E2:E6)</code></li>
+            <li>Formatea las notas con 2 decimales</li>
+        </ol>
+        
+        <div class="info-box">
+            <div class="info-box-title">Desafío extra</div>
+            <p>Agrega una columna "Observación" que diga "Excelente" si la nota es 4.5 o más, "Bueno" si es 4.0 a 4.4, "Regular" si es 3.0 a 3.9, y "Necesita mejorar" si es menos de 3.0.</p>
+        </div>
+        
+        <p><strong>Entregable:</strong> Tabla con fórmulas funcionando y promedio general calculado.</p>
+    </div>
+    
+    <div class="exercise">
+        <div class="exercise-header">
+            <span class="exercise-number">4</span>
+            <span class="exercise-title">Seguimiento de tareas</span>
+            <span class="exercise-week">Semana 2</span>
+        </div>
+        
+        <p><strong>Objetivo:</strong> Crear un control de tareas pendientes con fechas.</p>
+        
+        <h3>Instrucciones:</h3>
+        <ol>
+            <li>Crea una tabla con: Tarea, Materia, Fecha de entrega, Prioridad (Alta/Media/Baja), Estado</li>
+            <li>Ingresa al menos 8 tareas reales o de ejemplo</li>
+            <li>Agrega una columna "Días restantes" con la fórmula: <code>=C2-HOY()</code> (si C2 es la fecha de entrega)</li>
+            <li>Ordena las tareas por prioridad y fecha</li>
+            <li>Crea un filtro para ver solo las tareas pendientes</li>
+        </ol>
+        
+        <p><strong>Entregable:</strong> Tabla ordenada con fechas y días restantes calculados.</p>
+    </div>
+    
+    <h2 id="sem3">Semana 3: IA para Comprender Mejor</h2>
+    
+    <div class="exercise">
+        <div class="exercise-header">
+            <span class="exercise-number">5</span>
+            <span class="exercise-title">Explicación de un tema difícil</span>
+            <span class="exercise-week">Semana 3</span>
+        </div>
+        
+        <p><strong>Objetivo:</strong> Usar la IA para entender mejor un tema que se te dificulta.</p>
+        
+        <h3>Instrucciones:</h3>
+        <ol>
+            <li>Elige un tema de cualquier materia que no entiendas bien</li>
+            <li>Abre ChatGPT, Claude o Gemini</li>
+            <li>Escribe este prompt: <em>"Explícame [tu tema] como si tuviera 13 años. Usa ejemplos de la vida cotidiana y evita palabras muy técnicas. Dame 3 ejemplos prácticos."</em></li>
+            <li>Lee la explicación y haz al menos 3 preguntas de seguimiento para profundizar</li>
+            <li>Crea un resumen en tu cuaderno con tus propias palabras</li>
+        </ol>
+        
+        <div class="prompt-box">
+            <span class="prompt-label">EJEMPLO DE PROMPT</span>
+            <p class="prompt-text">"Explícame el teorema de Pitágoras como si tuviera 13 años. Usa ejemplos de la vida cotidiana y evita palabras muy técnicas. Dame 3 ejemplos prácticos donde lo usemos sin darnos cuenta."</p>
+        </div>
+        
+        <p><strong>Entregable:</strong> Capturas de la conversación con la IA y tu resumen escrito a mano.</p>
+    </div>
+    
+    <div class="exercise">
+        <div class="exercise-header">
+            <span class="exercise-number">6</span>
+            <span class="exercise-title">Flashcards para estudiar</span>
+            <span class="exercise-week">Semana 3</span>
+        </div>
+        
+        <p><strong>Objetivo:</strong> Crear material de estudio con ayuda de la IA.</p>
+        
+        <h3>Instrucciones:</h3>
+        <ol>
+            <li>Elige un tema que necesites estudiar para un examen o prueba</li>
+            <li>Pide a la IA: <em>"Crea 10 flashcards sobre [tema]. Formato: pregunta en una línea, respuesta en la siguiente. Incluye definiciones, conceptos clave y fórmulas importantes."</em></li>
+            <li>Copia las flashcards a tarjetas físicas o a una app como Quizlet</li>
+            <li>Estudia con ellas durante 15 minutos</li>
+            <li>Evalúa: ¿Te sirvieron? ¿Qué mejorarías?</li>
+        </ol>
+        
+        <p><strong>Entregable:</strong> Lista de las 10 flashcards generadas y una reflexión breve sobre su utilidad.</p>
+    </div>
+    
+    <h2 id="sem4">Semana 4: Proyecto Final Integrador</h2>
+    
+    <div class="exercise">
+        <div class="exercise-header">
+            <span class="exercise-number">7</span>
+            <span class="exercise-title">Dashboard de rendimiento académico</span>
+            <span class="exercise-week">Semana 4</span>
+        </div>
+        
+        <p><strong>Objetivo:</strong> Crear un panel completo que muestre tu rendimiento académico.</p>
+        
+        <h3>Instrucciones:</h3>
+        <ol>
+            <li>Crea un nuevo archivo en Google Sheets</li>
+            <li>Hoja 1 - "Notas": Tabla con todas tus materias y notas del período</li>
+            <li>Hoja 2 - "Resumen": 
+                <ul>
+                    <li>Promedio general (fórmula)</li>
+                    <li>Materia con mejor nota (fórmula MAX)</li>
+                    <li>Materia con peor nota (fórmula MIN)</li>
+                    <li>Cantidad de materias aprobadas (fórmula CONTAR.SI)</li>
+                </ul>
+            </li>
+            <li>Hoja 3 - "Gráficos": Crea al menos 2 gráficos:
+                <ul>
+                    <li>Gráfico de barras: Notas por materia</li>
+                    <li>Gráfico circular: Distribución de notas (Aprobadas vs. Por mejorar)</li>
+                </ul>
+            </li>
+            <li>Usa colores y formato profesional</li>
+        </ol>
+        
+        <div class="success-box">
+            <div class="success-box-title">Consejos para el dashboard</div>
+            <ul>
+                <li>Usa los mismos colores para la misma materia en todas las hojas</li>
+                <li>Agrega bordes y sombreado para que se vea organizado</li>
+                <li>Incluye un título claro en cada hoja</li>
+                <li>Verifica que todas las fórmulas funcionen correctamente</li>
+            </ul>
+        </div>
+        
+        <p><strong>Entregable:</strong> Archivo de Excel/Google Sheets con las 3 hojas completas.</p>
+    </div>
+    
+    <div class="exercise">
+        <div class="exercise-header">
+            <span class="exercise-number">8</span>
+            <span class="exercise-title">Plan de estudio con IA</span>
+            <span class="exercise-week">Semana 4</span>
+        </div>
+        
+        <p><strong>Objetivo:</strong> Crear un plan de estudio personalizado usando IA.</p>
+        
+        <h3>Instrucciones:</h3>
+        <ol>
+            <li>Identifica un examen importante que tengas próximamente</li>
+            <li>Pide a la IA: <em>"Crea un plan de estudio de 5 días para preparar un examen de [materia] sobre [temas]. Tengo 2 horas diarias para estudiar. Incluye técnicas de estudio recomendadas."</em></li>
+            <li>Revisa el plan y ajústalo a tus necesidades</li>
+            <li>Crea una tabla en Excel con:
+                <ul>
+                    <li>Día, Tema a estudiar, Horario, Actividad principal, Recursos</li>
+                </ul>
+            </li>
+            <li>Agrega una columna "Completado" con checkboxes o Sí/No</li>
+        </ol>
+        
+        <p><strong>Entregable:</strong> Plan de estudio generado por IA + tabla en Excel personalizada.</p>
+    </div>
+    
+    <div class="exercise">
+        <div class="exercise-header">
+            <span class="exercise-number">9</span>
+            <span class="exercise-title">Reflexión final</span>
+            <span class="exercise-week">Semana 4</span>
+        </div>
+        
+        <p><strong>Objetivo:</strong> Reflexionar sobre lo aprendido en el taller.</p>
+        
+        <h3>Responde estas preguntas:</h3>
+        <ol>
+            <li>¿Qué herramienta (Excel o IA) crees que te será más útil? ¿Por qué?</li>
+            <li>Describe una situación real donde usarías Excel para organizarte</li>
+            <li>Describe una situación real donde usarías IA para estudiar</li>
+            <li>¿Qué fue lo más difícil del taller?</li>
+            <li>¿Qué te gustaría aprender más sobre estas herramientas?</li>
+            <li>¿Cómo te asegurarás de usar la IA de forma ética?</li>
+        </ol>
+        
+        <p><strong>Entregable:</strong> Respuestas escritas (mínimo 3 líneas por pregunta).</p>
+    </div>
+
+    <!-- RESUMEN FINAL -->
+    <div class="summary-box">
+        <div class="summary-title">Resumen del Taller</div>
+        
+        <p>¡Felicitaciones por completar el taller! Ahora tienes herramientas poderosas para mejorar tu rendimiento académico:</p>
+        
+        <h3>Lo que aprendiste de Excel:</h3>
+        <ul>
+            <li>Organizar información en tablas claras</li>
+            <li>Usar fórmulas básicas: SUMA, PROMEDIO, MAX, MIN, SI</li>
+            <li>Crear gráficos para visualizar datos</li>
+            <li>Construir tablas dinámicas para análisis</li>
+        </ul>
+        
+        <h3>Lo que aprendiste de IA:</h3>
+        <ul>
+            <li>Usar IA como asistente de estudio, no como reemplazo</li>
+            <li>Crear resúmenes y explicaciones efectivas</li>
+            <li>Generar material de estudio (flashcards, preguntas)</li>
+            <li>Usar la IA de forma ética y evitar el plagio</li>
+        </ul>
+        
+        <div class="tip-box" style="margin-top: 20px;">
+            <div class="tip-box-title">Tu próximo paso</div>
+            <p>La práctica hace al maestro. Intenta usar estas herramientas al menos una vez por semana. Con el tiempo, se volverán naturales y verás cómo mejoran tu organización y comprensión. ¡Mucho éxito en tus estudios!</p>
+        </div>
+    </div>
+
+</body>
+</html>
